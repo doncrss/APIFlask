@@ -2,7 +2,7 @@
 services:
   db:
     image: postgres:18.4
-    container_name: db
+    container_name: flask_crisdb
     restart: always
     environment:
       POSTGRES_USER: psqluser
@@ -13,15 +13,15 @@ services:
     volumes:
       - psql_data:/var/lib/postgresql/data
 
-    backe_end:
-      build: .
-      restart: always
-      container_name: flasck_python
-      ports:
-        - "5018:5000"
-      env_file:
-      - path: .env
-        required: false
+  backe_end:
+    build: .
+    restart: always
+    container_name: flask_cris
+    ports:
+      - "5018:5000"
+    env_file:
+    - path: .env
+      required: false
 
 volumes:
   psql_data:
