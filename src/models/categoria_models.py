@@ -1,7 +1,9 @@
 from sqlalchemy.orm import relationship
 from connection import db
+from sqlalchemy import Column, String, Integer, Float
 
-class Categoria(db.Model):
+
+class CategoriaModel(db.Model):
     __tablename__ = 'categoria'
 
     id = Column(Integer, primary_key=True)

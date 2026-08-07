@@ -1,7 +1,8 @@
 from passlib.context import CryptContext
 from connection import db
+from sqlalchemy import Column, String, Integer
 
-class Usuario(db.Model):
+class UsuarioModel(db.Model):
     __tablename__ = 'usuarios'
 
     id = Column(Integer, primary_key=True)

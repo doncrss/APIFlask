@@ -1,14 +1,15 @@
 from sqlalchemy.orm import relationship
 from connection import db
 from datetime import datetime
+from sqlalchemy import Column, String, Integer, ForeignKey
 
-class Registro(db.Model):
+class RegistroModel(db.Model):
     __tablename__ = 'registros'
 
     id = Column(Integer, primary_key=True)
     tipo = Column(bool, nullable=False)
-    dth_registro: = Column(datetime)
-    fk_produto = Column(Integer, Foreign_key ("produtos.id"))
+    dth_registro = Column(datetime)
+    fk_produto = Column(Integer, ForeignKey ("produtos.id"))
     registro = relationship("Produto", back_populates = "Registro")
 
 
