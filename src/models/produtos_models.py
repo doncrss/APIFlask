@@ -13,6 +13,6 @@ class ProdutoModel(db.Model):
     qtd_estoque = Column(Integer, nullable=False)
     id_categoria = Column(Integer, ForeignKey ("categoria.id"))
     categoria = relationship("Categoria", back_populates = "Produto")
-    categoria = relationship("Produto", back_populates = "Registro")
+    registros = relationship("RegistroModel",back_populates="Produto")
 
     
