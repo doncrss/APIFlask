@@ -4,6 +4,7 @@ from sqlalchemy import Column, String, Integer
 
 class UsuarioModel(db.Model):
     __tablename__ = 'usuarios'
+    
 
     id = Column(Integer, primary_key=True)
     nome = Column(String(50), nullable=False)

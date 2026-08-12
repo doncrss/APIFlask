@@ -38,5 +38,5 @@ class ProdutoSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
 
 
-
-produto_schema = ProdutoSchema(many=True)
+produto_schema = ProdutoSchema()
+produtos_schema = ProdutoSchema(many=True)
