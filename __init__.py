@@ -5,7 +5,7 @@ from src import ma, api
 from flasgger import Swagger
 
 from src.models.user_models import UsuarioModel
-from src.views import user_view
+from src.views import user_view, produto_view, categoria_view, registro_view
 
 def create_app():
     app = Flask(__name__)
@@ -15,23 +15,18 @@ def create_app():
     api.init_app(app)
 
     swagger = Swagger(app, config={
-        "headers":[],
-        "specs":[
+        "headers": [],
+        "specs": [
             {
-                # http://localhost:5000/apispec_1.json
-                "endpoint":'apispec_1',
-                "route":'/apispec_1.json',
-                # incluir as rotas
-                "rule_filter": lambda rule: True
-
-                # incluir as models
-                "model_filter": lambda tag: True
-
+                "endpoint": 'apispec_1',
+                "route": '/apispec_1.json',
+                "rule_filter": lambda rule: True,
+                "model_filter": lambda tag: True,
             }
         ],
-        "static_url_path":"/flasgger_static",
-        "swagger_ui":True,
-        "specs_route":"/docs"
+        "static_url_path": "/flasgger_static",
+        "swagger_ui": True,
+        "specs_route": "/docs"
     })
 
     # opcional pra verificar funcionamento do server

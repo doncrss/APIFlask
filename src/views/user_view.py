@@ -82,97 +82,87 @@ api.add_resource(UsuarioList, '/usuarios')
 
 class UsuarioResource(Resource):
     def get(self, id_usuario):
-
         """
         Buscar usuário por ID
         ---
-
         tags:
             - Usuários
         parameters:
             - name: id_usuario
               in: path
               type: integer
-              required: True
+              required: true
         responses:
             200:
-                description: Lista de Usuários
+                description: Usuário encontrado
             404:
                 description: Nenhum usuário encontrado
-            409:
-                description:
-
-        
         """
-
-
-        
         usuario = user_services.listar_usuario_id(id_usuario)
         if not usuario:
-            return {
-                "message":"Usuário não encontrado!"
-            }, 404
+            return {"message": "Usuário não encontrado!"}, 404
 
         return usuario_schema.dump(usuario), 200
-    
+
     def put(self, id_usuario):
-           """
-            Cadastrar um novo usuário
-            ---
-    
-            tags:
-                - Usuários
-            parameters:
-                - name: id_usuario
-                  in: path
-                  type: integer
-                  required: True
-                - in: body
-                name: body
-                required: True
-                schema:
-                  type: object
-                  properties:
+        """
+        Atualizar usuário
+        ---
+        tags:
+            - Usuários
+        parameters:
+            - name: id_usuario
+              in: path
+              type: integer
+              required: true
+            - in: body
+              name: body
+              required: true
+              schema:
+                type: object
+                properties:
                     nome:
-                      type: string
+                        type: string
                     email:
-                      type: string
+                        type: string
                     senha:
-                      type: string
-            """
-    try:
-        novo_usuario = usuario_schema.load(request.get_json())
+                        type: string
+        responses:
+            200:
+                description: Usuário atualizado
+            404:
+                description: Usuário não encontrado
+        """
+        try:
+            novo_usuario = usuario_schema.load(request.get_json())
+        except ValidationError as err:
+            return err.messages, 400
 
-    except ValidationError as err:
-        return err.messages, 400
+        usuario = user_services.editar_usuario(
+            id_usuario,
+            {
+                "nome": novo_usuario.nome,
+                "email": novo_usuario.email,
+                "senha": novo_usuario.senha
+            }
+        )
 
-    usuario = user_services.editar_usuario(
-        id_usuario, {
-            "nome": novo_usuario.nome,
-            "email": novo_usuario.email,
-            "senha": novo_usuario.senha
-        }
-    )
+        if not usuario:
+            return {"message": "Usuário não encontrado!"}, 404
 
-    if not usuario:
-        return {"message": "Usuário não encontrado!"}, 404
-
-    return usuario_schema.dump(usuario), 200
+        return usuario_schema.dump(usuario), 200
 
     def delete(self, id_usuario):
-
         """
-        Deletar Usuário
+        Deletar usuário
         ---
-
         tags:
-          - Usuário
+            - Usuários
         """
         if user_services.deletar_usuario(id_usuario):
-            return {
-                "message":"Usuário deletado com sucesso!"
-            }, 200
+            return {"message": "Usuário deletado com sucesso!"}, 200
         return {"message": "Usuário não encontrado!"}, 404
+
 
 api.add_resource(UsuarioResource, '/usuario/<int:id_usuario>')
 
