@@ -11,8 +11,9 @@ class ProdutoModel(db.Model):
     preco = Column(Float, nullable=False)
     uni_medida = Column(String(50), nullable=False)
     qtd_estoque = Column(Integer, nullable=False)
-    id_categoria = Column(Integer, ForeignKey ("categoria.id"))
-    categoria = relationship("Categoria", back_populates = "Produto")
-    registros = relationship("RegistroModel",back_populates="Produto")
+    id_categoria = Column(Integer, ForeignKey("categoria.id"))
+
+    categoria = relationship("CategoriaModel", back_populates="produtos")
+    registros = relationship("RegistroModel", back_populates="produto", cascade="all, delete-orphan")
 
     

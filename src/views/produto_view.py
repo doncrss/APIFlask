@@ -1,10 +1,64 @@
 from flask_restful import Resource
 from flask import request, jsonify, make_response
-from src.schemas.produto_schema import (ProdutoSchema, produtos_schema)
+from src.schemas.produto_schema import (produto_schema, produtos_schema)
 from marshmallow import ValidationError
-from src.services.produto_services import produto
+from src.services import produto_services
 from src import api
+
 
 class ProdutoList(Resource):
     def get(self):
-        usuarios = user.service
+        produtos = produto_services.listar_produtos()
+
+        if not produtos:
+            return make_response(jsonify({'message': 'Não existem produtos!'}), 404)
+
+        return make_response(jsonify(produtos_schema.dump(produtos)), 200)
+
+    def post(self):
+        try:
+            produto = produto_schema.load(request.get_json())
+        except ValidationError as err:
+            return err.messages, 400
+
+        try:
+            resultado = produto_services.criar_produto(produto)
+            return produto_schema.dump(resultado), 201
+        except Exception as e:
+            return {"message": str(e)}, 400
+
+
+class ProdutoResource(Resource):
+    def get(self, id_produto):
+        produto = produto_services.buscar_produto(id_produto)
+        if not produto:
+            return {"message": "Produto não encontrado!"}, 404
+        return produto_schema.dump(produto), 200
+
+    def put(self, id_produto):
+        try:
+            novo_produto = produto_schema.load(request.get_json())
+        except ValidationError as err:
+            return err.messages, 400
+
+        produto = produto_services.atualizar_produto(id_produto, {
+            "nome": novo_produto.nome,
+            "preco": getattr(novo_produto, 'preco', None),
+            "uni_medida": getattr(novo_produto, 'uni_medida', None),
+            "qtd_estoque": getattr(novo_produto, 'qtd_estoque', None),
+            "id_categoria": getattr(novo_produto, 'id_categoria', None)
+        })
+
+        if not produto:
+            return {"message": "Produto não encontrado!"}, 404
+
+        return produto_schema.dump(produto), 200
+
+    def delete(self, id_produto):
+        if produto_services.deletar_produto(id_produto):
+            return {"message": "Produto deletado com sucesso!"}, 200
+        return {"message": "Produto não encontrado!"}, 404
+
+
+api.add_resource(ProdutoList, '/produtos')
+api.add_resource(ProdutoResource, '/produto/<int:id_produto>')

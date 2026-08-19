@@ -22,3 +22,4 @@ sqlalchemy-orm==1.2.10
 typing-inspect==0.9.0
 typing_extensions==4.16.0
 Werkzeug==3.1.8
+argon2-cffi==23.2.0

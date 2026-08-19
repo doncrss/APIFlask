@@ -3,11 +3,22 @@ from flask import request, jsonify, make_response
 from src.schemas.user_schemas import (usuario_schema, usuarios_schema)
 from marshmallow import ValidationError
 from src.services import user_services
-from src.services.user_services import usuario
 from src import api
 
 class UsuarioList(Resource):
     def get(self):
+
+        """
+        Lista todos os usuários.
+        ---
+        tags:
+            - Usuários
+        responses:
+            200:
+                description: Lista de usuários
+            404:
+                description: Não existem usuários cadastrados.
+        """
         usuarios = user_services.listar_usuario()
 
         if not usuarios:
@@ -16,6 +27,17 @@ class UsuarioList(Resource):
         return make_response(jsonify(usuarios_schema.dump(usuarios)), 200)
 
     def post(self):
+
+        """
+        Cria um novo usuário.
+        ---
+        tags:
+            -- Usuários
+        parameters:
+            - in: body
+        ---
+
+        """
         try:
             usuario = usuario_schema.load(request.get_json())
 
@@ -55,16 +77,16 @@ class UsuarioResource(Resource):
         except ValidationError as err:
             return err.messages, 400
 
-        user_services.editar_usuario(
+        usuario = user_services.editar_usuario(
             id_usuario, {
-                "nome":novo_usuario.nome,
-                "email":novo_usuario.email,
-                "senha":novo_usuario.senha
+                "nome": novo_usuario.nome,
+                "email": novo_usuario.email,
+                "senha": novo_usuario.senha
             }
         )
 
         if not usuario:
-            return{"message":"Usuário não encontrado!"}, 404
+            return {"message": "Usuário não encontrado!"}, 404
 
         return usuario_schema.dump(usuario), 200
 
@@ -72,8 +94,8 @@ class UsuarioResource(Resource):
         if user_services.deletar_usuario(id_usuario):
             return {
                 "message":"Usuário deletado com sucesso!"
-
             }, 200
-        return usuario_schema.dump(usuario), 200
-api.add.resource(UsuarioResource, '/usuario/<int:id_usuario>')
+        return {"message": "Usuário não encontrado!"}, 404
+
+api.add_resource(UsuarioResource, '/usuario/<int:id_usuario>')
 
