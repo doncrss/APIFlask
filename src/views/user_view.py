@@ -35,9 +35,29 @@ class UsuarioList(Resource):
             -- Usuários
         parameters:
             - in: body
+            name: body
+            required: true
+            schema:
+                type: object
+                properties:
+                    nome:
+                        type: string
+                    email:
+                        type: string
+                    senha:
+                        type: string
+                        example: senha123
         ---
+        responses:
+            201:
+                description: Usuário criado com sucesso.
+            400:
+                description: Erro de validação
+            409:
+                description: Email já cadastrado
+            
 
-        """
+        """ 
         try:
             usuario = usuario_schema.load(request.get_json())
 
@@ -62,6 +82,31 @@ api.add_resource(UsuarioList, '/usuarios')
 
 class UsuarioResource(Resource):
     def get(self, id_usuario):
+
+        """
+        Buscar usuário por ID
+        ---
+
+        tags:
+            - Usuários
+        parameters:
+            - name: id_usuario
+              in: path
+              type: integer
+              required: True
+        responses:
+            200:
+                description: Lista de Usuários
+            404:
+                description: Nenhum usuário encontrado
+            409:
+                description:
+
+        
+        """
+
+
+        
         usuario = user_services.listar_usuario_id(id_usuario)
         if not usuario:
             return {
@@ -71,26 +116,58 @@ class UsuarioResource(Resource):
         return usuario_schema.dump(usuario), 200
     
     def put(self, id_usuario):
-        try:
-            novo_usuario = usuario_schema.load(request.get_json())
+           """
+            Cadastrar um novo usuário
+            ---
+    
+            tags:
+                - Usuários
+            parameters:
+                - name: id_usuario
+                  in: path
+                  type: integer
+                  required: True
+                - in: body
+                name: body
+                required: True
+                schema:
+                  type: object
+                  properties:
+                    nome:
+                      type: string
+                    email:
+                      type: string
+                    senha:
+                      type: string
+            """
+    try:
+        novo_usuario = usuario_schema.load(request.get_json())
 
-        except ValidationError as err:
-            return err.messages, 400
+    except ValidationError as err:
+        return err.messages, 400
 
-        usuario = user_services.editar_usuario(
-            id_usuario, {
-                "nome": novo_usuario.nome,
-                "email": novo_usuario.email,
-                "senha": novo_usuario.senha
-            }
-        )
+    usuario = user_services.editar_usuario(
+        id_usuario, {
+            "nome": novo_usuario.nome,
+            "email": novo_usuario.email,
+            "senha": novo_usuario.senha
+        }
+    )
 
-        if not usuario:
-            return {"message": "Usuário não encontrado!"}, 404
+    if not usuario:
+        return {"message": "Usuário não encontrado!"}, 404
 
-        return usuario_schema.dump(usuario), 200
+    return usuario_schema.dump(usuario), 200
 
     def delete(self, id_usuario):
+
+        """
+        Deletar Usuário
+        ---
+
+        tags:
+          - Usuário
+        """
         if user_services.deletar_usuario(id_usuario):
             return {
                 "message":"Usuário deletado com sucesso!"

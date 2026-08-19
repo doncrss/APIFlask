@@ -2,6 +2,7 @@ from flask import Flask
 from connection import db, Config
 
 from src import ma, api
+from flasgger import Swagger
 
 from src.models.user_models import UsuarioModel
 from src.views import user_view
